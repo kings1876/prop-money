@@ -23,10 +23,26 @@ import {
 } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
 import { Product, ProductVariant } from '../types';
-import { BanknoteVisual } from '../components/BanknoteVisual';
 import { ProductImage } from '../components/ProductImage';
 import { priceForNotes } from '../lib/pricing';
 import { TRUSTPILOT_STATS, REVIEWS } from '../data/reviews';
+import { BLOG_POSTS } from '../data/blog';
+import { CurrencyCode } from '../types';
+
+// Product photo to show for a currency/denomination (falls back to any note in that currency).
+const productFor = (currency: CurrencyCode, denomination: Product['denomination']) =>
+  PRODUCTS.find((p) => p.currency === currency && p.denomination === denomination) ??
+  PRODUCTS.find((p) => p.currency === currency) ??
+  PRODUCTS[0];
+
+// Product photo shown on each blog article card.
+const ARTICLE_IMAGE: Record<string, string> = {
+  'legal-guide-prop-money-australia-rba-compliance': '100-aud-prop-stack-10000',
+  'how-directors-stage-million-dollar-cash-stacks-camera': '100-usd-blue-ribbon-prop-stack',
+  'hollywood-secrets-stretching-prop-money-budget': '50-eur-prop-stack-5000',
+  'why-security-academies-use-polymer-prop-currency': '50-aud-prop-stack-5000'
+};
+const articleProduct = (slug: string) => PRODUCTS.find((p) => p.slug === ARTICLE_IMAGE[slug]) ?? PRODUCTS[0];
 
 interface HomePageProps {
   onAddToCart: (product: Product, quantity?: number, variant?: ProductVariant) => void;
@@ -385,14 +401,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                   NOT LEGAL TENDER
                 </span>
               </div>
-              <div className="h-24 sm:h-28 rounded-lg overflow-hidden flex items-center justify-center p-2 bg-[#121417]/80 border border-[#23272E]">
-                <BanknoteVisual
-                  currency={heroSlides[currentSlide].currency}
-                  denomination={heroSlides[currentSlide].denomination}
-                  isStack={true}
-                  stagedValue={heroSlides[currentSlide].stagedSample}
-                  className="scale-90 sm:scale-100"
-                />
+              <div className="aspect-[3/2] rounded-lg overflow-hidden border border-[#23272E]">
+                <ProductImage product={productFor(heroSlides[currentSlide].currency, heroSlides[currentSlide].denomination)} />
               </div>
               <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs pt-1 border-t border-[#23272E]">
                 <div>
@@ -467,7 +477,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               Shop by Category
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-400 sm:text-base">
-              Every denomination and currency edition in one place — Next-Gen Australian Polymer, Hollywood US Dollars, European Cinema Euros, British Pounds, and high-roller heist prop cases.
+              Every denomination and currency edition in one place — Next-Gen Australian Polymer, Hollywood US Dollars, European Cinema Euros, British Pounds, and Canadian Dollars.
             </p>
           </div>
 
@@ -480,17 +490,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                 className="group flex flex-col overflow-hidden rounded-2xl border border-[#2B2F36] bg-[#17191C] transition-all hover:border-[#8C4A2F] hover:shadow-xl hover:shadow-black/50 cursor-pointer"
               >
                 {/* 4:3 Visual container with fallback banknote showcase */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#121417] flex items-center justify-center p-4">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#17191C] via-transparent to-transparent z-10 pointer-events-none" />
-                  
-                  {/* Category banknote graphical representation */}
-                  <div className="w-full flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-                    <BanknoteVisual
-                      currency={cat.currency}
-                      denomination={cat.denom}
-                      isStack={true}
-                      className="max-w-[200px]"
-                    />
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECECEE]">
+                  <div className="w-full h-full transition-transform duration-500 group-hover:scale-105">
+                    <ProductImage product={productFor(cat.currency, cat.denom)} />
                   </div>
 
                   {/* Top-Left Category Kicker Badge */}
@@ -1044,45 +1046,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
 
           {/* 3-Article Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[
-              {
-                slug: 'australian-prop-money-laws-guide',
-                tag: 'Legal Compliance',
-                date: '2026-08-18',
-                readTime: '7 min read',
-                title: 'Australian Prop Money Laws: Where Can Film Crews Legally Shoot?',
-                desc: 'A state-by-state breakdown of public location filming, notification of state police commands, and strict Reserve Bank Act 1981 Section 27 compliance guidelines.'
-              },
-              {
-                slug: 'lighting-prop-money-4k-8k-cameras',
-                tag: 'Cinematography',
-                date: '2026-08-02',
-                readTime: '5 min read',
-                title: 'How to Light Polymer Prop Banknotes on 4K & 8K Cinema Sensors Without Glare',
-                desc: 'Polarizing filter techniques, bounce diffusion, and cross-key angles to make prop currency read convincingly on camera.'
-              },
-              {
-                slug: 'staging-heist-vault-scenes-guide',
-                tag: 'Art Department',
-                date: '2026-07-25',
-                readTime: '6 min read',
-                title: 'Staging Million Dollar Vaults: Note Counts, Straps & Case Sizing',
-                desc: 'Calculate exact physical volumes, briefcase dimensions, and proper pallet stacking for bank vault and robbery sequences.'
-              }
-            ].map((art) => (
+            {BLOG_POSTS.slice(0, 3).map((post) => ({
+              slug: post.slug,
+              tag: post.category,
+              date: post.date,
+              readTime: post.readTime,
+              title: post.title,
+              desc: post.excerpt
+            })).map((art) => (
               <Link
                 key={art.slug}
                 to={`/blog/${art.slug}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-[#2B2F36] bg-[#17191C] transition-all hover:border-[#8C4A2F] hover:shadow-xl hover:shadow-black/50 cursor-pointer"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#121417] flex items-center justify-center p-6">
-                  <div className="w-full flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-                    <BanknoteVisual
-                      currency="AUD"
-                      denomination={100}
-                      isStack={true}
-                      className="max-w-[220px]"
-                    />
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECECEE]">
+                  <div className="w-full h-full transition-transform duration-500 group-hover:scale-105">
+                    <ProductImage product={articleProduct(art.slug)} />
                   </div>
                   <span className="absolute left-3 top-3 rounded bg-[#17191C]/90 px-2.5 py-1 font-mono text-[10px] font-bold text-[#C87D55] border border-white/5">
                     {art.tag}

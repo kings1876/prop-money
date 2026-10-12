@@ -5,7 +5,6 @@ import { Product, ProductVariant, CartItem } from './types';
 
 // Components
 import { Header } from './components/Header';
-import { Hero } from './components/Hero';
 import { ProductGrid } from './components/ProductGrid';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartDrawer } from './components/CartDrawer';
