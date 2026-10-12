@@ -109,7 +109,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       categoryParam: 'Australian Dollars',
       kicker: 'Next-Gen Polymer',
       count: '4 Models',
-      desc: '$5, $10, $20, $50, and $100 polymer-feel stacks, one-sided at 75% scale with large PROP COPY markings.',
+      desc: '$10, $20, $50, and $100 polymer-feel stacks, one-sided at 75% scale with large PROP COPY markings.',
       currency: 'AUD' as const,
       denom: 100 as const,
       startingPrice: '$39 AUD'
@@ -142,7 +142,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       categoryParam: 'British Pounds',
       kicker: 'UK Film & TV Stacks',
       count: '4 Models',
-      desc: '£5, £10, £20, and £50 Bank of England polymer replicas with clean theatrical straps.',
+      desc: '£5, £10, £20, and £50 prop notes with an original Westminster design, one-sided with PROP COPY markings.',
       currency: 'GBP' as const,
       denom: 50 as const,
       startingPrice: '$39 AUD'
@@ -482,7 +482,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
           </div>
 
           {/* 8-Card Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
