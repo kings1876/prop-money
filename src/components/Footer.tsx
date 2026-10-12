@@ -35,8 +35,8 @@ export const Footer: React.FC = () => {
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-white text-xs font-mono uppercase">25% Pricing & Crypto</h4>
-              <p className="text-[11px] text-stone-400">Min $500 AUD · 10% off BTC/USDT</p>
+              <h4 className="font-bold text-white text-xs font-mono uppercase">Secure Card Checkout</h4>
+              <p className="text-[11px] text-stone-400">Stacks from $39 AUD · Free shipping over $150</p>
             </div>
           </div>
 
@@ -191,15 +191,14 @@ export const Footer: React.FC = () => {
           {/* Accepted Payments & Keywords */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="font-bold text-white uppercase tracking-wider text-[11px] font-mono">
-              Accepted Currencies
+              Accepted Payments
             </h4>
             <div className="space-y-2">
               <div className="flex flex-wrap gap-1.5 text-[11px] font-mono">
-                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#2B2F36] text-stone-300">AUD ($)</span>
-                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#8C4A2F]/40 text-[#C87D55]">USDT (-10%)</span>
-                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#8C4A2F]/40 text-[#C87D55]">BTC (-10%)</span>
-                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#8C4A2F]/40 text-[#C87D55]">ETH (-10%)</span>
-                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#8C4A2F]/40 text-[#C87D55]">SOL (-10%)</span>
+                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#2B2F36] text-stone-300">Visa</span>
+                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#2B2F36] text-stone-300">Mastercard</span>
+                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#2B2F36] text-stone-300">Amex</span>
+                <span className="px-2 py-1 rounded bg-[#17191C] border border-[#2B2F36] text-stone-300">EFT Invoice</span>
               </div>
               <p className="text-[11px] text-stone-400 pt-1">
                 Prices include Australian GST. Fast same-day order processing.

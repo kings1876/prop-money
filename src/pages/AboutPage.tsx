@@ -42,7 +42,7 @@ export const AboutPage: React.FC = () => {
               Back in early 2018, Australian filmmakers faced a frustrating dilemma when shooting cash scenes: either import cheap paper foreign replicas that frequently got flagged or seized by Australian Border Force, or settle for cartoonish counterfeit notes that looked completely fake in high-definition 4K camera close-ups.
             </p>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              On <strong>17 May 2018</strong>, our scenic art team launched <strong>Australia Prop Money</strong>. We engineered a proprietary synthetic polymer substrate that mirrors the weight, flexibility, and translucent aesthetic of authentic Australian banknotes while rigorously complying with the Commonwealth <em>Crimes (Currency) Act 1981</em> and Reserve Bank guidelines.
+              On <strong>17 May 2018</strong>, our scenic art team launched <strong>Australia Prop Money</strong>. We engineered a proprietary synthetic polymer substrate with the flex and matte finish that reads well on camera, printed one-sided at 75% scale, while rigorously complying with the Commonwealth <em>Crimes (Currency) Act 1981</em> and Reserve Bank guidelines.
             </p>
             <div className="pt-2 flex flex-wrap gap-4 text-xs font-semibold text-amber-400">
               <span className="flex items-center gap-1.5">
@@ -83,7 +83,7 @@ export const AboutPage: React.FC = () => {
               </div>
               <div className="flex gap-3">
                 <span className="font-mono font-bold text-amber-400 shrink-0">2026</span>
-                <span className="text-slate-300">Upgraded to instant nationwide express dispatch and 10% crypto payment rewards.</span>
+                <span className="text-slate-300">Upgraded to nationwide express dispatch and secure card checkout.</span>
               </div>
             </div>
           </div>

@@ -49,7 +49,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: 'Production Craft',
     content: [
       'Every indie filmmaker dreams of staging a dramatic briefcase handoff or duffel bag full of cash. But purchasing 5,000 full-print replica notes can stretch tight art department budgets.',
-      'Enter the "Hollywood Blank-Filler" technique. By placing full-print double-sided prop notes on the top and bottom of a strapped bundle, and filling the interior 98 notes with color-matched edge paper, you achieve 100% visual fidelity for briefcase and duffel bag shots at a fraction of the cost.',
+      'Enter the "Hollywood Blank-Filler" technique. By placing full-print prop notes on the top and bottom of a strapped bundle, and filling the interior 98 notes with color-matched edge paper, you achieve 100% visual fidelity for briefcase and duffel bag shots at a fraction of the cost.',
       'Reserve full-print prop stacks for hero shots where actors actively fan, count, or toss individual banknotes. By combining 2–3 full-print stacks for close-ups with 10–20 blank filler bundles for volume, you can fill an entire bank vault set on an indie budget.'
     ]
   },

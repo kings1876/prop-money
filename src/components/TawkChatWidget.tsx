@@ -15,7 +15,7 @@ export const TawkChatWidget: React.FC = () => {
   const quickQuestions = [
     'How fast is Australian shipping?',
     'Are these props 100% legal in Australia?',
-    'How do I claim the 10% crypto discount?',
+    'What payment methods do you accept?',
     'Do you do bulk studio discounts?'
   ];
 
@@ -34,13 +34,13 @@ export const TawkChatWidget: React.FC = () => {
       const lower = text.toLowerCase();
 
       if (lower.includes('shipping') || lower.includes('fast') || lower.includes('delivery')) {
-        botReply = "All orders include Free Express Australia Post shipping! Sydney, Melbourne & Brisbane metro typically arrive in 1-2 business days. Regional WA and NT take 2-4 business days.";
+        botReply = "Tracked shipping is $12.95 AUD, free on orders over $150. Sydney, Melbourne & Brisbane metro typically arrive in 1-2 business days. Regional WA and NT take 2-4 business days.";
       } else if (lower.includes('legal') || lower.includes('rba') || lower.includes('crimes')) {
-        botReply = "Yes, 100% compliant! All our props comply with the Crimes (Currency) Act 1981 and RBA rules. Every note is printed with mandatory 'PROP COPY / NOT LEGAL TENDER' markings and differs in design from real currency.";
-      } else if (lower.includes('crypto') || lower.includes('discount') || lower.includes('10%')) {
-        botReply = "Select 'Cryptocurrency' on the Order Form during checkout! The 10% discount is automatically deducted, and we provide instant wallet addresses for USDT (TRC20), BTC, ETH, and SOL.";
+        botReply = "Yes, 100% compliant! All our props comply with the Crimes (Currency) Act 1981 and RBA rules. Every note is one-sided, 75% scale, and printed with large 'PROP COPY / NOT LEGAL TENDER' markings.";
+      } else if (lower.includes('pay') || lower.includes('card') || lower.includes('invoice')) {
+        botReply = "We accept Visa, Mastercard and Amex through our secure card checkout. Production companies can also request a tax invoice payable by EFT.";
       } else if (lower.includes('bulk') || lower.includes('custom') || lower.includes('briefcase')) {
-        botReply = "For orders over $500 AUD, we offer tailored filmmaker volume pricing and custom branded production bands. Simply contact us with your shoot dates!";
+        botReply = "For bulk orders, we offer tailored filmmaker volume pricing and custom branded production bands. Simply contact us with your shoot dates!";
       }
 
       setMessages(prev => [...prev, {

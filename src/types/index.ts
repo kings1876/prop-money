@@ -48,6 +48,7 @@ export interface Product {
     label: string;
   };
   seoKeywords: string[];
+  image?: string; // real product photo; falls back to the generated illustration
   variants: ProductVariant[];
 }
 
@@ -92,9 +93,7 @@ export interface OrderDetails {
   state: string;
   postcode: string;
   country: string;
-  paymentMethod: 'crypto' | 'bank_transfer';
-  cryptoCurrency?: 'BTC' | 'ETH' | 'USDT_TRC20' | 'SOL';
-  cryptoTxHash?: string;
+  paymentMethod: 'card' | 'direct_invoice';
   notes?: string;
   discountCode?: string;
   items: CartItem[];

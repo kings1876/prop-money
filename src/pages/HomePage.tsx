@@ -24,6 +24,8 @@ import {
 import { PRODUCTS } from '../data/products';
 import { Product, ProductVariant } from '../types';
 import { BanknoteVisual } from '../components/BanknoteVisual';
+import { ProductImage } from '../components/ProductImage';
+import { priceForNotes } from '../lib/pricing';
 import { TRUSTPILOT_STATS, REVIEWS } from '../data/reviews';
 
 interface HomePageProps {
@@ -40,10 +42,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
     {
       title: "PREMIUM THEATRICAL PROP MONEY",
       highlight: "RANGE IN AUSTRALIA",
-      tagline: "AUSTRALIA'S #1 PROP MONEY SPECIALISTS • 4.9/5 ON TRUSTPILOT • 25% RATE",
-      description: "From $500 AUD single stacks to high-roller $1,000,000 heist vaults — realistic dual-sided polymer, 24hr priority dispatch and strictly compliant with Reserve Bank Act 1981.",
+      tagline: "AUSTRALIA'S #1 PROP MONEY SPECIALISTS • 4.9/5 ON TRUSTPILOT",
+      description: "From $39 AUD single stacks to 1,000-note studio lots — one-sided, 75% scale polymer-feel notes with large PROP COPY markings, 24hr dispatch.",
       stagedSample: "$10,000 AUD",
-      priceSample: "$2,500 AUD",
+      priceSample: "$39 AUD",
       notesSample: "100x $100 Banknotes",
       denomination: 100 as const,
       currency: 'AUD' as const,
@@ -52,10 +54,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
     {
       title: "HOLLYWOOD FILM GRADE",
       highlight: "USD CURRENCY STACKS",
-      tagline: "CINEMA STANDARD • 4K & 8K CAMERA CALIBRATED • DUAL-SIDED",
-      description: "Authentic aged and crisp uncirculated US dollar prop bills. Fitted with official currency straps, designed specifically for close-up cinema camera framing.",
+      tagline: "CINEMA STANDARD • 4K & 8K CAMERA CALIBRATED • ONE-SIDED",
+      description: "Crisp US dollar-style prop bills at 75% scale. Fitted with official currency straps, designed specifically for close-up cinema camera framing.",
       stagedSample: "$20,000 USD",
-      priceSample: "$5,000 AUD",
+      priceSample: "$69 AUD",
       notesSample: "200x $100 Franklin Notes",
       denomination: 100 as const,
       currency: 'USD' as const,
@@ -67,23 +69,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       tagline: "EURO SERIES • HIGH GLOSS FILM COATING • LEGAL SCALE",
       description: "Full European banknote denominations engineered for international co-productions, high-fashion commercials, and streaming series filmed in Australia.",
       stagedSample: "€10,000 EUR",
-      priceSample: "$2,500 AUD",
+      priceSample: "$69 AUD",
       notesSample: "200x €50 Europa Notes",
       denomination: 50 as const,
       currency: 'EUR' as const,
       badge: "EUROPA SERIES"
-    },
-    {
-      title: "HEIST CASES & BUNDLES",
-      highlight: "MILLION DOLLAR VAULTS",
-      tagline: "COMPLETE CRIME THRILLER PACKS • LOCKABLE CASES INCLUDED",
-      description: "Heavy-duty aluminum flight cases packed with banded prop stacks. The ultimate turnkey prop asset for high-stakes robbery and cartel movie scenes.",
-      stagedSample: "$1,000,000 AUD",
-      priceSample: "$250,000 AUD",
-      notesSample: "10,000x $100 Polymer Notes",
-      denomination: 'Mixed' as const,
-      currency: 'AUD' as const,
-      badge: "PRODUCTION VAULT"
     }
   ];
 
@@ -102,44 +92,44 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       name: 'Australian Dollars (AUD)',
       categoryParam: 'Australian Dollars',
       kicker: 'Next-Gen Polymer',
-      count: '8 Models',
-      desc: '$5, $10, $20, $50, and $100 polymer stacks with dual-sided Reserve Bank disclaimers.',
+      count: '4 Models',
+      desc: '$5, $10, $20, $50, and $100 polymer-feel stacks, one-sided at 75% scale with large PROP COPY markings.',
       currency: 'AUD' as const,
       denom: 100 as const,
-      startingPrice: '$500 AUD'
+      startingPrice: '$39 AUD'
     },
     {
       id: 'usd',
       name: 'US Dollars (USD)',
       categoryParam: 'US Dollars',
       kicker: 'Hollywood Film Series',
-      count: '9 Models',
-      desc: '$1, $2, $5, $10, $20, $50, and $100 bills with cinema straps and aged finishes.',
+      count: '6 Models',
+      desc: '$1, $5, $10, $20, $50, and $100 bills with cinema straps and aged finishes.',
       currency: 'USD' as const,
       denom: 100 as const,
-      startingPrice: '$500 AUD'
+      startingPrice: '$39 AUD'
     },
     {
       id: 'eur',
       name: 'European Euros (EUR)',
       categoryParam: 'Euro',
       kicker: 'Continental Cinema',
-      count: '8 Models',
+      count: '7 Models',
       desc: '€5, €10, €20, €50, €100, €200 and €500 notes for international movie productions.',
       currency: 'EUR' as const,
       denom: 50 as const,
-      startingPrice: '$500 AUD'
+      startingPrice: '$39 AUD'
     },
     {
       id: 'gbp',
       name: 'British Pounds (GBP)',
       categoryParam: 'British Pounds',
       kicker: 'UK Film & TV Stacks',
-      count: '5 Models',
+      count: '4 Models',
       desc: '£5, £10, £20, and £50 Bank of England polymer replicas with clean theatrical straps.',
       currency: 'GBP' as const,
       denom: 50 as const,
-      startingPrice: '$500 AUD'
+      startingPrice: '$39 AUD'
     },
     {
       id: 'cad',
@@ -150,29 +140,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       desc: '$5, $10, $20, $50, and $100 Canadian polymer bills for cross-border streaming productions.',
       currency: 'CAD' as const,
       denom: 100 as const,
-      startingPrice: '$500 AUD'
-    },
-    {
-      id: 'bundles',
-      name: 'Production Starter Bundles',
-      categoryParam: 'All Currencies',
-      kicker: 'Director Starter Kits',
-      count: '4 Packages',
-      desc: 'Multi-denomination prop cash packages containing mixed stacks for dynamic camera framing.',
-      currency: 'AUD' as const,
-      denom: 'Mixed' as const,
-      startingPrice: '$500 AUD'
-    },
-    {
-      id: 'briefcases',
-      name: 'Heist Cases & Vaults',
-      categoryParam: 'All Currencies',
-      kicker: 'Armored Security Cases',
-      count: '3 Vaults',
-      desc: 'Lockable brushed aluminum briefcases loaded with $100,000 to $1,000,000 in banded cash.',
-      currency: 'AUD' as const,
-      denom: 100 as const,
-      startingPrice: '$25,000 AUD'
+      startingPrice: '$39 AUD'
     },
     {
       id: 'training',
@@ -183,18 +151,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
       desc: 'High-volume prop bundles for bank teller simulation, cash-in-transit security, and police drills.',
       currency: 'AUD' as const,
       denom: 50 as const,
-      startingPrice: '$500 AUD'
+      startingPrice: '$39 AUD'
     }
   ];
 
   // Section 2: Featured products filter
-  const [featuredTab, setFeaturedTab] = useState<'all' | 'aud' | 'usd' | 'eur_gbp' | 'bundles'>('all');
+  const [featuredTab, setFeaturedTab] = useState<'all' | 'aud' | 'usd' | 'eur_gbp'>('all');
 
   const filteredFeatured = PRODUCTS.filter((p) => {
     if (featuredTab === 'aud') return p.currency === 'AUD';
     if (featuredTab === 'usd') return p.currency === 'USD';
     if (featuredTab === 'eur_gbp') return p.currency === 'EUR' || p.currency === 'GBP';
-    if (featuredTab === 'bundles') return p.id.includes('bundle') || p.id.includes('briefcase') || p.category.includes('Bundle');
     return true;
   }).slice(0, 8);
 
@@ -312,9 +279,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
 
   // Section 5: Interactive Scene Cash Calculator State
   const [stagedAmount, setStagedAmount] = useState<number>(10000);
-  const deliveryPrice = Math.round(stagedAmount * 0.25);
-  const cryptoPrice = Math.round(deliveryPrice * 0.9);
   const noteCount = Math.round(stagedAmount / 100);
+  const stackCount = Math.ceil(noteCount / 100);
+  const scenePrice = priceForNotes(noteCount);
 
   // Section 7: Accordion FAQ state
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -322,31 +289,27 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
   const faqs = [
     {
       q: "What is prop money and how does it comply with Australian law?",
-      a: "Australia Prop Money manufactures simulated banknotes engineered exclusively for motion pictures, theatrical productions, training, and broadcast television. Under Section 27 of the Reserve Bank Act 1981 and the Crimes (Currency) Act 1981, all our notes feature prominent, non-negotiable double-sided markings stating 'FOR MOTION PICTURE USE ONLY', modified dimensions, non-genuine signatures, and synthetic polymer substrates without covert sovereign security features."
+      a: "Australia Prop Money manufactures simulated banknotes engineered exclusively for motion pictures, theatrical productions, training, and broadcast television. Under Section 27 of the Reserve Bank Act 1981 and the Crimes (Currency) Act 1981, all our notes are printed on one side only at 75% of genuine size, carry large 'PROP COPY - NOT LEGAL TENDER' markings across the face, and reproduce no security features."
     },
     {
-      q: "How does the guaranteed 25% delivery rate work?",
-      a: "Our pricing operates on a fixed 25% delivery ratio across every denomination and currency. You pay exactly 25% of the delivered face value of the prop money. For example, a $2,000 AUD staged banknote stack costs $500 AUD (25%); a $10,000 AUD staged pack costs $2,500 AUD (25%). There are no hidden fees, and standard tracked shipping is included."
+      q: "How is prop money priced?",
+      a: "Prices are based on the number of notes, not the denomination printed on them. A 100-note stack is $39 AUD whether it shows $5 or $100 notes, and larger packs get a lower per-note rate. Shipping is $12.95 AUD tracked, free on orders over $150."
     },
     {
-      q: "What is the $500 AUD minimum price policy?",
-      a: "To ensure professional-grade production quality, custom bank banding, and dedicated tamper-evident crate packaging, our minimum item price is $500 AUD. At the 25% delivery rate, a $500 AUD order delivers $2,000 AUD in authentic staged prop currency. Customers can checkout immediately with any item in our catalog."
-    },
-    {
-      q: "Are these double-sided notes printed on realistic polymer?",
-      a: "Yes. Unlike cheap single-sided paper copies, our Australian notes are manufactured with high-tensile matte synthetic polymer featuring dual-sided high-resolution artwork, transparent window simulation, and tactile micro-texture designed not to glare under 4K and 8K cinema lighting rigs."
+      q: "Why are the notes one-sided and smaller than real money?",
+      a: "Reserve Bank of Australia guidelines on reproducing banknotes call for reproductions that cannot be mistaken for genuine currency. Our notes are printed on one side only at 75% scale, with large PROP COPY markings. On camera, fanned or stacked notes still read as cash, and our matte synthetic stock is designed not to glare under studio lighting."
     },
     {
       q: "How fast is delivery across Sydney, Melbourne, Brisbane and regional Australia?",
       a: "All orders are dispatched within 24 hours on business days from our Sydney and Melbourne distribution centers. We utilize Australia Post Express and StarTrack Priority Couriers with full end-to-end tracking. Metro deliveries arrive in 1 to 2 business days; regional areas arrive in 2 to 4 business days."
     },
     {
-      q: "What payment methods are supported, and how does the 10% crypto discount work?",
-      a: "We support Visa, Mastercard, American Express, Pay in 4 installment plans, and direct cryptocurrency checkout (Bitcoin, Ethereum, USDT, USDC). Paying via cryptocurrency instantly applies an extra 10% discount at checkout, reducing your effective cost even further."
+      q: "What payment methods are supported?",
+      a: "We accept Visa, Mastercard and American Express through our secure card checkout. Production companies can also request a tax invoice payable by EFT."
     },
     {
       q: "Can you provide custom serial numbers or large-scale heist vault quantities?",
-      a: "Yes. For major television broadcasts, feature films, and casino sequences, we regularly supply quantities from $100,000 up to $10,000,000 in banded prop currency, complete with lockable aluminum security cases and custom bank straps. Contact our production logistics desk for bespoke orders."
+      a: "Yes. For major television broadcasts, feature films, and casino sequences, we regularly supply bulk quantities of banded prop stacks, complete with lockable aluminum security cases and custom bank straps. Contact our production logistics desk for bespoke orders."
     }
   ];
 
@@ -419,7 +382,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-[#C87D55] font-bold uppercase tracking-wider">{heroSlides[currentSlide].badge}</span>
                 <span className="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                  25% DELIVERY RATE
+                  NOT LEGAL TENDER
                 </span>
               </div>
               <div className="h-24 sm:h-28 rounded-lg overflow-hidden flex items-center justify-center p-2 bg-[#121417]/80 border border-[#23272E]">
@@ -433,7 +396,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               </div>
               <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs pt-1 border-t border-[#23272E]">
                 <div>
-                  <span className="text-stone-400 text-[10px] block">Staged Value</span>
+                  <span className="text-stone-400 text-[10px] block">Strap Label</span>
                   <span className="text-white font-bold">{heroSlides[currentSlide].stagedSample}</span>
                 </div>
                 <div>
@@ -441,7 +404,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                   <span className="text-amber-400 font-bold">{heroSlides[currentSlide].notesSample.split(' ')[0]}</span>
                 </div>
                 <div>
-                  <span className="text-stone-400 text-[10px] block">Delivery (25%)</span>
+                  <span className="text-stone-400 text-[10px] block">Price</span>
                   <span className="text-emerald-400 font-bold">{heroSlides[currentSlide].priceSample}</span>
                 </div>
               </div>
@@ -467,12 +430,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
             {/* 4-Card Specification / Trust Metric Bar (AEMC Exact Format) */}
             <div className="mx-auto hidden max-w-3xl grid-cols-2 gap-4 border-t border-[#23272E]/60 pt-8 text-center font-mono sm:grid sm:grid-cols-4">
               <div className="rounded-lg border border-[#23272E] bg-[#17191C]/80 p-3">
-                <div className="text-xs text-stone-400">Delivery Rate</div>
-                <div className="text-lg font-bold text-amber-400">25% Value</div>
+                <div className="text-xs text-stone-400">Note Scale</div>
+                <div className="text-lg font-bold text-amber-400">75%</div>
               </div>
               <div className="rounded-lg border border-[#23272E] bg-[#17191C]/80 p-3">
-                <div className="text-xs text-stone-400">Min Pack Price</div>
-                <div className="text-lg font-bold text-white">$500 AUD</div>
+                <div className="text-xs text-stone-400">Stacks From</div>
+                <div className="text-lg font-bold text-white">$39 AUD</div>
               </div>
               <div className="rounded-lg border border-[#23272E] bg-[#17191C]/80 p-3">
                 <div className="text-xs text-stone-400">Trustpilot Score</div>
@@ -583,7 +546,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               Featured Prop Money Collections
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-400 sm:text-base">
-              Hand-picked studio packs in stock now — every price GST inclusive, strictly 25% delivery pricing, with a 10% crypto discount (BTC/USDT) and instant checkout at $500 AUD min item price.
+              Hand-picked studio packs in stock now — every price GST inclusive, stacks from $39 AUD, free tracked shipping over $150.
             </p>
           </div>
 
@@ -593,8 +556,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               { id: 'all', label: 'All Collections' },
               { id: 'aud', label: 'Australian Dollars' },
               { id: 'usd', label: 'US Dollars' },
-              { id: 'eur_gbp', label: 'Euro & GBP' },
-              { id: 'bundles', label: 'Bundles & Cases' }
+              { id: 'eur_gbp', label: 'Euro & GBP' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -615,7 +577,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
             {filteredFeatured.map((prod) => {
               const defaultVariant = prod.variants?.find((v) => v.isDefault) || prod.variants?.[0];
               const price = defaultVariant ? defaultVariant.price : prod.price;
-              const comparePrice = defaultVariant?.comparePrice || prod.comparePrice;
 
               return (
                 <div
@@ -629,22 +590,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                       className="relative block aspect-square overflow-hidden bg-[#121417] p-4 cursor-pointer"
                     >
                       <div className="w-full h-full flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-                        <BanknoteVisual
-                          currency={prod.currency}
-                          denomination={(prod.denomination as any) || 100}
-                          isStack={true}
-                          stagedValue={prod.stagedValue}
-                        />
+                        <ProductImage product={prod} />
                       </div>
 
-                      {/* Top-Left Badge: 25% Delivery Rate */}
                       <span className="absolute left-3 top-3 font-mono text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded bg-[#17191C]/90 text-amber-400 border border-white/10 shadow-md">
-                        25% RATE
-                      </span>
-
-                      {/* Top-Right Badge: 10% Off Crypto */}
-                      <span className="absolute right-3 top-3 font-mono text-[10px] font-bold tracking-wide px-2 py-0.5 rounded bg-[#8C4A2F] text-white shadow-md">
-                        10% OFF CRYPTO
+                        PROP COPY
                       </span>
                     </div>
 
@@ -660,7 +610,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                         {prod.name}
                       </h3>
                       <div className="flex items-center gap-2 text-xs text-stone-400">
-                        <span>Delivers <strong className="text-emerald-400">{prod.stagedValue}</strong> Face Value</span>
+                        <span><strong className="text-emerald-400">{prod.noteCount.toLocaleString()}</strong> prop notes · 75% scale</span>
                       </div>
                     </div>
                   </div>
@@ -671,11 +621,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
                           <span className="text-xl font-bold font-mono text-white">${price} AUD</span>
-                          {comparePrice && (
-                            <span className="text-xs font-mono text-stone-500 line-through">${comparePrice}</span>
-                          )}
                         </div>
-                        <span className="text-[10px] font-mono text-[#C87D55] block">Min $500 AUD · 25% Value</span>
+                        <span className="text-[10px] font-mono text-[#C87D55] block">GST included</span>
                       </div>
                     </div>
 
@@ -913,7 +860,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               Engineered for Australia. Tuned for Raw Realism.
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-400 sm:text-base">
-              Australia Prop Money engineers and supplies competition-grade theatrical currency, high-durability synthetic polymer substrates, dual-sided compliance disclaimers, and studio-grade bank bands designed for high-resolution cameras under intense studio lights. Registered for GST in NSW with nationwide express courier logistics.
+              Australia Prop Money engineers and supplies competition-grade theatrical currency, high-durability synthetic polymer substrates, large one-sided PROP COPY markings, and studio-grade bank bands designed for high-resolution cameras under intense studio lights. Registered for GST in NSW with nationwide express courier logistics.
             </p>
           </div>
 
@@ -928,7 +875,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                 <h3 className="font-bold text-white text-base">Reserve Bank Act 1981 Compliance</h3>
               </div>
               <p className="text-xs leading-relaxed text-stone-400">
-                Non-negotiable double-sided markings stating "FOR MOTION PICTURE USE ONLY", non-genuine signatures, and legal scale variations compliant with RBA guidelines and Crimes (Currency) Act 1981.
+                Every note is one-sided, 75% of genuine size, and marked "PROP COPY - NOT LEGAL TENDER" across the face, following RBA reproduction guidelines and the Crimes (Currency) Act 1981.
               </p>
             </div>
 
@@ -937,10 +884,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                 <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
                   <DollarSign className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-white text-base">Strict 25% Delivery Pricing</h3>
+                <h3 className="font-bold text-white text-base">Simple Per-Stack Pricing</h3>
               </div>
               <p className="text-xs leading-relaxed text-stone-400">
-                You pay exactly 25% of the delivered face value of the prop money. A $2,000 AUD staged banknote pack costs $500 AUD; a $10,000 AUD pack costs $2,500 AUD. Clear, predictable production budgeting.
+                Pay per note, not per face value: a 100-note stack is $39 AUD whatever the denomination, with lower rates on bigger packs. Clear, predictable production budgeting.
               </p>
             </div>
 
@@ -988,7 +935,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               Need Help Sizing Your Staged Cash Scene?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-400">
-              Calculate your required prop face value, note counts, bundle stacks, and exact 25% delivery rate before placing your order.
+              Pick the amount your scene needs to show on screen and see how many $100 prop notes and stacks that takes, and what it costs.
             </p>
 
             {/* Interactive Sizing Widget */}
@@ -1024,7 +971,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               {/* Slider */}
               <div className="space-y-2">
                 <div className="flex justify-between font-mono text-xs">
-                  <span className="text-stone-400">Adjust Staged Face Value:</span>
+                  <span className="text-stone-400">Amount Shown On Screen:</span>
                   <span className="text-amber-400 font-bold">${stagedAmount.toLocaleString()} AUD</span>
                 </div>
                 <input
@@ -1041,7 +988,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               {/* Calculation Output Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono pt-2">
                 <div className="p-3 rounded-xl bg-[#121417] border border-[#23272E]">
-                  <div className="text-[10px] text-stone-400">Staged Value</div>
+                  <div className="text-[10px] text-stone-400">On-Screen Amount</div>
                   <div className="text-base font-bold text-white">${stagedAmount.toLocaleString()}</div>
                 </div>
                 <div className="p-3 rounded-xl bg-[#121417] border border-[#23272E]">
@@ -1049,12 +996,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                   <div className="text-base font-bold text-amber-400">{noteCount.toLocaleString()}x $100</div>
                 </div>
                 <div className="p-3 rounded-xl bg-[#121417] border border-[#23272E]">
-                  <div className="text-[10px] text-stone-400">Delivery Rate (25%)</div>
-                  <div className="text-base font-bold text-emerald-400">${deliveryPrice.toLocaleString()} AUD</div>
+                  <div className="text-[10px] text-stone-400">Strapped Stacks</div>
+                  <div className="text-base font-bold text-emerald-400">{stackCount.toLocaleString()} x 100</div>
                 </div>
                 <div className="p-3 rounded-xl bg-[#121417] border border-[#23272E]">
-                  <div className="text-[10px] text-stone-400">Crypto Price (10% Off)</div>
-                  <div className="text-base font-bold text-[#C87D55]">${cryptoPrice.toLocaleString()} AUD</div>
+                  <div className="text-[10px] text-stone-400">Estimated Price</div>
+                  <div className="text-base font-bold text-[#C87D55]">${scenePrice.toLocaleString()} AUD</div>
                 </div>
               </div>
 
@@ -1112,7 +1059,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
                 date: '2026-08-02',
                 readTime: '5 min read',
                 title: 'How to Light Polymer Prop Banknotes on 4K & 8K Cinema Sensors Without Glare',
-                desc: 'Polarizing filter techniques, bounce diffusion, and cross-key angles to ensure prop currency looks 100% indistinguishable from real sovereign notes.'
+                desc: 'Polarizing filter techniques, bounce diffusion, and cross-key angles to make prop currency read convincingly on camera.'
               },
               {
                 slug: 'staging-heist-vault-scenes-guide',
@@ -1194,7 +1141,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onAddToCart, onQuickView }) 
               Frequently Asked Questions
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-400 sm:text-base">
-              Direct, factual answers on 25% delivery pricing, $500 AUD minimum pack price, Australian legal compliance, and express shipping.
+              Direct, factual answers on pricing, Australian legal compliance, payment, and shipping.
             </p>
           </div>
 

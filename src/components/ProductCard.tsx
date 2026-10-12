@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product, ProductVariant } from '../types';
-import { BanknoteVisual } from './BanknoteVisual';
+import { ProductImage } from './ProductImage';
 import { Eye, Plus, Check } from 'lucide-react';
 
 interface ProductCardProps {
@@ -48,13 +48,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         to={`/product/${product.slug}`}
         className="block relative w-full aspect-[4/3] bg-[#0A0F22] overflow-hidden"
       >
-        <BanknoteVisual
-          currency={product.currency}
-          denomination={product.denomination}
-          isStack={true}
-          stagedValue={selectedVariant.stagedValue || product.stagedValue}
-          badge={product.badge}
-        />
+        <ProductImage product={product} showBadge noteCount={selectedVariant.noteCount} />
 
         {/* Hover inspect hint */}
         <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 pointer-events-none">
@@ -135,12 +129,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <span className="font-display font-bold text-lg text-white tabular-nums">
                 ${selectedVariant.price} <span className="text-xs font-sans text-slate-400 font-normal">AUD</span>
               </span>
-              <span className="text-[10px] text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 px-1.5 py-0.5 rounded font-semibold whitespace-nowrap">
-                25% Rate
-              </span>
             </div>
             <span className="block text-[11px] text-amber-300 font-mono mt-0.5 font-medium">
-              Delivers: {selectedVariant.stagedValue}
+              {selectedVariant.noteCount.toLocaleString()} prop notes
             </span>
           </div>
 

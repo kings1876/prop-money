@@ -137,7 +137,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
               {categoryParam === 'All Currencies' ? 'Global Prop Money Collection' : `${categoryParam} Prop Banknotes`}
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Choose your production currency below. All prices are calculated at exactly <strong>25% of the prop money to be delivered</strong> (Minimum pack price <strong>$500 AUD</strong>, delivering min. $2,000 in authentic prop notes), with fast tracked express dispatch.
+              Choose your production currency below. Every note is one-sided, 75% scale and marked <strong>"PROP COPY"</strong>. Stacks from <strong>$39 AUD</strong>, with free tracked shipping over $150.
             </p>
           </div>
 
@@ -165,13 +165,10 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
             {/* Popular SEO Keyword Queries */}
             <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-              <span className="text-slate-400 font-medium">SEO Targets:</span>
+              <span className="text-slate-400 font-medium">Popular:</span>
               {[
-                'Realistic Prop Money',
-                'Fake 100 Dollar Bills',
                 'Movie Money',
-                'Prop Banknotes',
-                'Heist Briefcase'
+                'Prop Banknotes'
               ].map((kw) => (
                 <button
                   key={kw}
@@ -187,30 +184,6 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* 25% Rate Guaranteed Pricing Banner */}
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/80 via-[#102040] to-emerald-950/80 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
-              <span className="font-display font-black text-emerald-400 text-lg">25%</span>
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <span>Guaranteed 25% Delivery Pricing</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-400/20 text-emerald-300 font-semibold border border-emerald-400/30">
-                  Fixed Rate
-                </span>
-              </h2>
-              <p className="text-xs text-slate-300 mt-0.5">
-                Prices are strictly <strong>25% of the prop money delivered</strong> (e.g. $10,000 Prop Staged Value = $2,500 AUD, $2,000 Prop Staged Value = $500 AUD).
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 bg-[#0B132B]/80 px-3.5 py-2 rounded-xl border border-slate-700/80 shrink-0 text-xs">
-            <span className="text-slate-400">Formula:</span>
-            <span className="font-mono font-bold text-amber-400">Delivered Prop Value × 0.25</span>
           </div>
         </div>
 
@@ -309,7 +282,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
             {searchParam && ` matching "${searchParam}"`}
           </span>
           <span className="text-emerald-400 font-semibold hidden sm:inline">
-            Free Australia-Wide Express Tracked Dispatch
+            Free tracked shipping on orders over $150
           </span>
         </div>
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { CartItem } from '../types';
-import { BanknoteVisual } from '../components/BanknoteVisual';
+import { ProductImage } from '../components/ProductImage';
+import { itemPrice as getItemPrice, cartSubtotal, shippingFor, formatAud } from '../lib/pricing';
 import { 
-  X, Check, Copy, ShieldCheck, AlertCircle, ArrowLeft, ArrowRight,
-  Send, Sparkles, Truck, Lock, ShoppingBag 
+  Check, AlertCircle, ArrowLeft, ArrowRight, Send, Truck, Lock, ShoppingBag, CreditCard
 } from 'lucide-react';
 
 interface CheckoutPageProps {
@@ -16,7 +16,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   items,
   onOrderSuccess
 }) => {
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnStatus = searchParams.get('status');
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -26,59 +27,89 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     suburb: '',
     state: 'NSW',
     postcode: '',
-    deliveryNotes: '',
-    paymentMethod: 'crypto' as 'crypto' | 'direct_invoice',
-    cryptoCoin: 'USDT_TRC20' as 'BTC' | 'ETH' | 'USDT_TRC20' | 'SOL',
-    cryptoTxHash: '',
+    production: '',
+    paymentMethod: 'card' as 'card' | 'direct_invoice',
     agreeCompliance: false
   });
 
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
+  // 'card' = returned from a successful Stripe payment; 'invoice' = invoice request sent
+  const [orderComplete, setOrderComplete] = useState<false | 'card' | 'invoice'>(
+    returnStatus === 'success' ? 'card' : false
+  );
   const [generatedOrderNumber, setGeneratedOrderNumber] = useState('');
 
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(
+    returnStatus === 'cancelled' ? 'Card payment was cancelled. Your order bag is still saved, so you can try again.' : null
+  );
+
+  // Clear the cart once Stripe redirects back after a successful payment.
+  useEffect(() => {
+    if (returnStatus === 'success') onOrderSuccess();
+  }, [returnStatus]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.title = 'Order Form & Checkout | Australia Prop Money';
   }, []);
 
-  const getItemPrice = (item: CartItem) => item.selectedVariant?.price || item.product.price;
-  const subtotal = items.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
-  const isCrypto = formData.paymentMethod === 'crypto';
-  const discountAmount = isCrypto ? Math.round(subtotal * 0.1) : 0;
-  const shippingFee = 0; // Free express shipping nationwide
-  const finalTotal = subtotal - discountAmount + shippingFee;
+  const subtotal = cartSubtotal(items);
+  const shippingFee = shippingFor(subtotal);
+  const finalTotal = subtotal + shippingFee;
 
-  const CRYPTO_WALLETS = {
-    USDT_TRC20: {
-      name: 'Tether USDT (TRC-20 Network)',
-      address: 'TQk8v5Xw9P2M4z7L8Y1jE5sD3cF6aB9N2m',
-      network: 'TRON (TRC20) - Low Network Fee ($1-$2)'
-    },
-    BTC: {
-      name: 'Bitcoin (BTC)',
-      address: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
-      network: 'Native SegWit (Bitcoin Core)'
-    },
-    ETH: {
-      name: 'Ethereum (ETH / ERC-20)',
-      address: '0x71C8360538965f3d45543594892c949826F8f906',
-      network: 'Ethereum Mainnet'
-    },
-    SOL: {
-      name: 'Solana (SOL)',
-      address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
-      network: 'Solana Network'
+  const startCardCheckout = async () => {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: items.map((i) => ({ productId: i.product.id, variantId: i.selectedVariant?.id, quantity: i.quantity })),
+        customer: {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          suburb: formData.suburb,
+          state: formData.state,
+          postcode: formData.postcode,
+          production: formData.production
+        }
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || 'We could not start the card payment. Please try again.');
     }
+    window.location.assign(data.url);
   };
 
-  const copyToClipboard = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+  const sendInvoiceRequest = async (orderNum: string) => {
+    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
+    if (!accessKey) {
+      throw new Error('Invoice ordering is not available right now. Please pay by card or contact us.');
+    }
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: accessKey,
+        subject: `Invoice Request ${orderNum} - Australia Prop Money`,
+        from_name: formData.fullName,
+        order_id: orderNum,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        production: formData.production || '-',
+        shipping_address: `${formData.address}, ${formData.suburb} ${formData.state} ${formData.postcode}, Australia`,
+        payment_method: 'Production invoice (EFT)',
+        subtotal: formatAud(subtotal),
+        shipping: shippingFee === 0 ? 'Free' : formatAud(shippingFee),
+        total: formatAud(finalTotal),
+        items: items.map(i => `${i.product.name} [${i.selectedVariant?.name || 'Standard'}] (Qty: ${i.quantity}) - ${formatAud(getItemPrice(i) * i.quantity)}`).join('\n')
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success === false) {
+      throw new Error('We could not send your invoice request. Please try again or contact us.');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,43 +121,20 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
 
     setSubmitting(true);
-    const orderNum = `APM-${Math.floor(100000 + Math.random() * 900000)}`;
-    setGeneratedOrderNumber(orderNum);
-
     try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({
-          access_key: 'YOUR_ACCESS_KEY_HERE',
-          subject: `New Prop Money Order ${orderNum} - Australia Prop Money`,
-          from_name: formData.fullName,
-          order_id: orderNum,
-          customer_email: formData.email,
-          customer_phone: formData.phone,
-          shipping_address: `${formData.address}, ${formData.suburb} ${formData.state} ${formData.postcode}, Australia`,
-          payment_method: formData.paymentMethod,
-          crypto_selected: formData.cryptoCoin,
-          tx_hash: formData.cryptoTxHash || 'Pending Transfer',
-          subtotal: `$${subtotal} AUD`,
-          discount: `-$${discountAmount} AUD (10% Crypto)`,
-          total: `$${finalTotal} AUD`,
-          items: items.map(i => `${i.product.name} [${i.selectedVariant?.name || 'Standard'}] (Qty: ${i.quantity}) - $${getItemPrice(i) * i.quantity} AUD`).join('\n')
-        })
-      }).catch(() => null);
-
-      setTimeout(() => {
-        setSubmitting(false);
-        setOrderComplete(true);
-        onOrderSuccess();
-      }, 700);
-    } catch {
-      setSubmitting(false);
-      setOrderComplete(true);
+      if (formData.paymentMethod === 'card') {
+        await startCardCheckout(); // redirects to Stripe on success
+        return;
+      }
+      const orderNum = `APM-${Math.floor(100000 + Math.random() * 900000)}`;
+      await sendInvoiceRequest(orderNum);
+      setGeneratedOrderNumber(orderNum);
+      setOrderComplete('invoice');
       onOrderSuccess();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -173,50 +181,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
             <div className="space-y-2">
               <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">
-                Order Received Successfully
+                {orderComplete === 'card' ? 'Payment Successful' : 'Invoice Request Received'}
               </span>
               <h1 className="font-display text-3xl font-extrabold text-white">
-                Order #{generatedOrderNumber}
+                {orderComplete === 'card' ? 'Thank you for your order' : `Order #${generatedOrderNumber}`}
               </h1>
               <p className="text-sm text-slate-300">
-                Thank you, <strong>{formData.fullName}</strong>. Your Australian prop order has been logged into our Sydney dispatch queue.
+                {orderComplete === 'card'
+                  ? 'Your payment went through. A receipt is on its way to your email, and we will send tracking details once your order ships.'
+                  : `Thank you, ${formData.fullName}. We will email a tax invoice to ${formData.email}. Your order ships once payment is received.`}
               </p>
             </div>
-
-            {/* Receipt Summary Card */}
-            <div className="bg-[#121B38] border border-slate-700/80 rounded-xl p-5 text-left text-xs space-y-2.5">
-              <div className="flex justify-between pb-2 border-b border-slate-700">
-                <span className="text-slate-400">Recipient Email:</span>
-                <span className="text-white font-medium">{formData.email}</span>
-              </div>
-              <div className="flex justify-between pb-2 border-b border-slate-700">
-                <span className="text-slate-400">Delivery Address:</span>
-                <span className="text-white font-medium text-right">
-                  {formData.address}, {formData.suburb} {formData.state} {formData.postcode}
-                </span>
-              </div>
-              <div className="flex justify-between pb-2 border-b border-slate-700">
-                <span className="text-slate-400">Payment Selected:</span>
-                <span className="text-amber-400 font-medium capitalize">
-                  {isCrypto ? `Crypto (${formData.cryptoCoin}) - 10% Discount Applied` : 'Direct Production Invoice'}
-                </span>
-              </div>
-              <div className="flex justify-between pt-1 text-sm font-bold text-white">
-                <span>Total Amount:</span>
-                <span className="font-mono text-amber-300">${finalTotal} AUD</span>
-              </div>
-            </div>
-
-            {isCrypto && (
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-left text-xs space-y-2">
-                <div className="font-semibold text-amber-300">
-                  Next Step: Complete Crypto Transfer
-                </div>
-                <p className="text-slate-300 leading-relaxed">
-                  Please send <strong>${finalTotal} AUD</strong> equivalent to the {formData.cryptoCoin} wallet address provided. Our dispatch team cross-references blockchain transfers immediately.
-                </p>
-              </div>
-            )}
 
             <div className="pt-2">
               <Link
@@ -244,7 +219,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </h2>
                   <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
                     <Truck className="w-3.5 h-3.5" />
-                    Free Express Tracked
+                    Tracked Shipping
                   </span>
                 </div>
 
@@ -357,6 +332,19 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
               </div>
 
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Production / Company Name (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.production}
+                    onChange={(e) => setFormData({ ...formData, production: e.target.value })}
+                    placeholder="e.g. Harbour Lights Pictures - Episode 4"
+                    className="w-full bg-[#121B38] border border-slate-700 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
               {/* Step 2: Payment Method */}
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -364,108 +352,31 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     <span className="w-5 h-5 rounded-full bg-amber-400 text-slate-950 text-xs font-extrabold flex items-center justify-center">2</span>
                     Payment Method
                   </h2>
-                  <span className="text-xs text-amber-400 font-bold">10% Crypto Discount</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: 'crypto' })}
-                    className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
-                      formData.paymentMethod === 'crypto'
-                        ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                        : 'border-slate-800 bg-[#121B38] text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-xs text-white">Cryptocurrency</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950">
-                        SAVE 10%
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-400">
-                      Instant checkout with USDT, BTC, ETH, or SOL.
-                    </p>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: 'direct_invoice' })}
-                    className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
-                      formData.paymentMethod === 'direct_invoice'
-                        ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                        : 'border-slate-800 bg-[#121B38] text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-xs text-white">Direct Production Invoice</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400">
-                      We email a formal tax invoice payable by Australian PayID / EFT.
-                    </p>
-                  </button>
+                  {([
+                    { id: 'card', title: 'Credit / Debit Card', desc: 'Visa, Mastercard & Amex via secure Stripe checkout.' },
+                    { id: 'direct_invoice', title: 'Production Invoice', desc: 'We email a tax invoice payable by EFT. Ships once paid.' }
+                  ] as const).map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, paymentMethod: m.id })}
+                      className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
+                        formData.paymentMethod === m.id
+                          ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
+                          : 'border-slate-800 bg-[#121B38] text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {m.id === 'card' && <CreditCard className="w-4 h-4 text-amber-400" />}
+                        <span className="font-semibold text-xs text-white">{m.title}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">{m.desc}</p>
+                    </button>
+                  ))}
                 </div>
-
-                {/* Crypto Wallet Details */}
-                {isCrypto && (
-                  <div className="bg-[#090E20] border border-amber-500/30 rounded-xl p-4 space-y-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs text-slate-300 font-medium">Select Crypto:</span>
-                      {(['USDT_TRC20', 'BTC', 'ETH', 'SOL'] as const).map((coin) => (
-                        <button
-                          key={coin}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, cryptoCoin: coin })}
-                          className={`px-3 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer ${
-                            formData.cryptoCoin === coin
-                              ? 'bg-amber-400 text-slate-950 font-bold'
-                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                          }`}
-                        >
-                          {coin === 'USDT_TRC20' ? 'USDT (TRC-20)' : coin}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="p-3 bg-[#0E162F] rounded-lg border border-slate-700/80 space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-amber-300">
-                          {CRYPTO_WALLETS[formData.cryptoCoin].name}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
-                          {CRYPTO_WALLETS[formData.cryptoCoin].network}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 bg-[#080C1B] p-2 rounded border border-slate-800">
-                        <span className="font-mono text-[11px] text-white break-all flex-1 select-all">
-                          {CRYPTO_WALLETS[formData.cryptoCoin].address}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(CRYPTO_WALLETS[formData.cryptoCoin].address, 'wallet')}
-                          className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded text-[11px] flex items-center gap-1 cursor-pointer shrink-0"
-                        >
-                          {copiedKey === 'wallet' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                          <span>{copiedKey === 'wallet' ? 'Copied' : 'Copy'}</span>
-                        </button>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] text-slate-400 mt-2 mb-1">
-                          Transaction Hash / ID (Optional - or reply to email)
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.cryptoTxHash}
-                          onChange={(e) => setFormData({ ...formData, cryptoTxHash: e.target.value })}
-                          placeholder="e.g. 7e9b... or 'Sending now'"
-                          className="w-full bg-[#121B38] border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Step 3: Legal Compliance Agreement */}
@@ -502,11 +413,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   className="w-full py-4 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer transition-colors"
                 >
                   {submitting ? (
-                    <span>Processing Order...</span>
+                    <span>{formData.paymentMethod === 'card' ? 'Redirecting to payment...' : 'Sending request...'}</span>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Confirm & Place Order (${finalTotal} AUD)</span>
+                      <span>
+                      {formData.paymentMethod === 'card'
+                        ? `Continue to Secure Payment (${formatAud(finalTotal)})`
+                        : `Request Invoice (${formatAud(finalTotal)})`}
+                    </span>
                     </>
                   )}
                 </button>
@@ -528,12 +443,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   return (
                     <div key={`${item.product.id}-${variantKey}`} className="flex gap-3 items-center py-2 border-b border-slate-800/80 last:border-b-0">
                       <div className="w-16 h-12 rounded bg-[#0A0F22] overflow-hidden shrink-0">
-                        <BanknoteVisual
-                          currency={item.product.currency}
-                          denomination={item.product.denomination}
-                          isStack={false}
-                          className="!aspect-auto h-full !p-0.5"
-                        />
+                        <ProductImage product={item.product} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs font-semibold text-white truncate">{item.product.name}</h4>
@@ -543,7 +453,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                         <span className="text-[11px] text-slate-400">Qty: {item.quantity}</span>
                       </div>
                       <span className="font-display font-bold text-xs text-white tabular-nums">
-                        ${itemPrice * item.quantity} AUD
+                        {formatAud(itemPrice * item.quantity)}
                       </span>
                     </div>
                   );
@@ -552,31 +462,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
               {/* Price Calculation Box */}
               <div className="space-y-2 pt-2 border-t border-slate-800 text-xs text-slate-300">
-                <div className="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30 text-emerald-300">
-                  <span className="font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Prop Money Delivered:
-                  </span>
-                  <span className="font-mono font-bold">${subtotal * 4} Staged Value</span>
-                </div>
                 <div className="flex justify-between">
-                  <span>Delivery Pricing (25% Rate):</span>
-                  <span className="font-mono text-white font-bold">${subtotal} AUD</span>
+                  <span>Subtotal:</span>
+                  <span className="font-mono text-white font-bold">{formatAud(subtotal)}</span>
                 </div>
-                {isCrypto && (
-                  <div className="flex justify-between text-amber-400 font-semibold">
-                    <span>10% Crypto Discount:</span>
-                    <span className="font-mono">-${discountAmount} AUD</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-emerald-400">
-                  <span>Australia Post Express:</span>
-                  <span className="font-semibold">FREE</span>
+                  <span>Tracked Shipping:</span>
+                  <span className="font-semibold">{shippingFee === 0 ? 'FREE' : formatAud(shippingFee)}</span>
                 </div>
                 <div className="pt-3 border-t border-slate-800 flex justify-between items-baseline font-bold text-white text-base">
                   <span>Total Due:</span>
                   <span className="font-display font-extrabold text-2xl text-amber-300 tabular-nums">
-                    ${finalTotal} <span className="text-xs font-normal text-slate-400">AUD</span>
+                    {formatAud(finalTotal)}
                   </span>
                 </div>
               </div>
@@ -584,7 +481,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               {/* Security note */}
               <div className="p-3 rounded-lg bg-[#121B38] border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>GST Included · Plain Unmarked Packaging Guarantee</span>
+                <span>GST Included · Card payments processed securely by Stripe</span>
               </div>
             </div>
 

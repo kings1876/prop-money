@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Product, ProductVariant } from '../types';
-import { BanknoteVisual } from './BanknoteVisual';
+import { ProductImage } from './ProductImage';
 import { X, Check, ShieldCheck, Truck, Sparkles, Plus, Minus, ArrowRight, Layers, CheckCircle2 } from 'lucide-react';
 
 interface ProductDetailModalProps {
@@ -84,13 +84,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               {/* Main Banknote Render */}
               <div className="py-4">
-                <BanknoteVisual
-                  currency={product.currency}
-                  denomination={product.denomination}
-                  isStack={true}
-                  stagedValue={currentVariant.stagedValue || product.stagedValue}
-                  badge={product.badge}
-                />
+                <ProductImage product={product} showBadge noteCount={currentVariant.noteCount} className="rounded-xl overflow-hidden aspect-[4/3]" />
               </div>
             </div>
 
@@ -132,19 +126,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   {product.name}
                 </h2>
                 <div className="mt-1 text-xs text-amber-300 font-mono font-medium">
-                  Staged Value: {currentVariant.stagedValue} ({currentVariant.noteCount} Notes)
+                  {currentVariant.noteCount.toLocaleString()} prop notes · one-sided · 75% scale
                 </div>
-              </div>
-
-              {/* 25% Delivery Pricing Guarantee */}
-              <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between text-xs">
-                <span className="font-bold text-emerald-400 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Fixed 25% Delivery Rate:
-                </span>
-                <span className="text-emerald-300 font-mono text-[11px] font-semibold bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700/50">
-                  Pay 25% of Delivered Value
-                </span>
               </div>
 
               {/* Price Row */}
@@ -152,11 +135,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 <span className="font-display font-extrabold text-2xl sm:text-3xl text-white tabular-nums">
                   ${currentVariant.price} <span className="text-sm font-sans font-normal text-slate-400">AUD</span>
                 </span>
-                <span className="text-xs text-emerald-400 font-medium px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40">
-                  25% of {currentVariant.stagedValue}
-                </span>
                 <span className="text-xs text-amber-300 font-medium px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/40">
-                  Min. Price $500 AUD
+                  GST included
                 </span>
               </div>
 

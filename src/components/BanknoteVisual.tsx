@@ -458,17 +458,16 @@ export const BanknoteVisual: React.FC<BanknoteVisualProps> = ({
         )}
 
         {/* Top Hero Prop Banknote */}
-        <div className={`relative aspect-[16/8.5] w-full rounded-md shadow-2xl border ${config.lightBorder} bg-gradient-to-r ${config.bgGradient} p-2.5 flex flex-col justify-between overflow-hidden`}>
+        <div className={`@container relative aspect-[16/8.5] w-full rounded-md shadow-2xl border ${config.lightBorder} bg-gradient-to-r ${config.bgGradient} p-2.5 flex flex-col justify-between overflow-hidden`}>
           {/* Subtle Security Line Pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-black pointer-events-none" />
 
-          {/* USD 3D Blue Security Ribbon feature if applicable */}
-          {config.hasBlueRibbon && (
-            <div className="absolute top-0 bottom-0 left-[55%] w-3.5 bg-gradient-to-r from-blue-700 via-cyan-400 to-blue-700 opacity-90 shadow-md z-15 flex flex-col items-center justify-around py-1">
-              <span className="text-[6px] font-mono font-bold text-white tracking-widest rotate-90">100</span>
-              <span className="text-[6px] font-mono font-bold text-white tracking-widest rotate-90">PROP</span>
-            </div>
-          )}
+          {/* Large diagonal PROP COPY marking across the face */}
+          <div className="absolute inset-0 z-25 flex items-center justify-center pointer-events-none">
+            <span className="-rotate-12 font-black font-mono text-white tracking-widest text-[clamp(10px,9cqw,40px)] bg-red-700/75 border-y-2 border-white/80 px-2 whitespace-nowrap shadow-lg">
+              PROP COPY
+            </span>
+          </div>
 
           {/* Top Bar of Note */}
           <div className="relative z-10 flex items-start justify-between">

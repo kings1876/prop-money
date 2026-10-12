@@ -17,15 +17,15 @@ export const FaqPage: React.FC = () => {
     },
     {
       q: 'How fast is nationwide delivery across Australia?',
-      a: 'All orders include Free Australia Post Express Tracked Shipping! Orders placed before 2:00 PM AEST on business days are dispatched on the same day from our Sydney or Melbourne facilities. Metro areas (Sydney, Melbourne, Brisbane, Canberra, Adelaide) typically arrive in 1 to 2 business days. Regional areas and WA/NT take 2 to 4 business days.'
+      a: 'Tracked shipping is $12.95 AUD, free on orders over $150. Orders placed before 2:00 PM AEST on business days are dispatched on the same day from our Sydney or Melbourne facilities. Metro areas (Sydney, Melbourne, Brisbane, Canberra, Adelaide) typically arrive in 1 to 2 business days. Regional areas and WA/NT take 2 to 4 business days.'
     },
     {
-      q: 'How does the 10% Cryptocurrency discount work?',
-      a: 'When you choose "Cryptocurrency" on the Order Form during checkout, a 10% discount is automatically deducted from your order total. We accept Tether (USDT on TRC-20), Bitcoin (BTC), Ethereum (ETH), and Solana (SOL). You will see our designated deposit address and network instructions immediately.'
+      q: 'What payment methods do you accept?',
+      a: 'We accept Visa, Mastercard and American Express through our secure card checkout, powered by Stripe. Production companies can also choose "Production Invoice" at checkout and we will email a tax invoice payable by EFT before dispatch.'
     },
     {
       q: 'What is the difference between "Full-Print Stacks" and "Blank-Filler Stacks"?',
-      a: 'Full-Print Stacks contain 100 individual double-sided printed polymer prop notes. Actors can fan them out, count them individually, or toss them in front of the lens. Blank-Filler Stacks feature authentic printed top and bottom $100 prop notes with 98 color-matched edge paper fillers in the middle, wrapped in an official bank strap. Blank fillers give you the exact look and thickness of a $10,000 stack at nearly half the price, making them ideal for stuffing duffel bags, briefcases, or background safes.'
+      a: 'Full-Print Stacks contain 100 individual one-sided, 75% scale prop notes. Actors can fan them out, count them individually, or toss them in front of the lens. Blank-Filler Stacks feature authentic printed top and bottom $100 prop notes with 98 color-matched edge paper fillers in the middle, wrapped in an official bank strap. Blank fillers give you the exact look and thickness of a $10,000 stack at nearly half the price, making them ideal for stuffing duffel bags, briefcases, or background safes.'
     },
     {
       q: 'Will these notes jam inside a money gun (cash blaster)?',
@@ -40,12 +40,12 @@ export const FaqPage: React.FC = () => {
       a: 'Yes. All orders are shipped in plain, tamper-evident Australia Post Express mailers or unbranded sturdy corrugated boxes. There is no external mention of "prop money" or "cash" on the packaging to ensure total security and privacy during transit.'
     },
     {
-      q: 'What is the minimum price for prop money items?',
-      a: 'The minimum product price across all our prop currency collections is $500 AUD. Under our fixed 25% delivery pricing formula, every $500 AUD pack delivers at least $2,000 in authentic staged prop banknotes with complimentary Australia Post Express shipping included.'
+      q: 'How is prop money priced?',
+      a: 'Prices are based on the number of notes, not the denomination printed on them. A 100-note stack is $39 AUD whether it shows $5 or $100 notes, and larger packs get a lower per-note rate.'
     },
     {
       q: 'Can I order custom prop currency or bank wrappers for my production?',
-      a: 'Yes! For feature films, streaming series, or corporate training academies requiring over $500 AUD in props, we offer custom bank strap stamping (e.g. your fictional film bank name) and customized distressed lots. Contact our production desk via the Contact page.'
+      a: 'Yes! For feature films, streaming series, or corporate training academies ordering in bulk, we offer custom bank strap stamping (e.g. your fictional film bank name) and customized distressed lots. Contact our production desk via the Contact page.'
     }
   ];
 

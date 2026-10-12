@@ -237,10 +237,10 @@ export const ContactPage: React.FC = () => {
                     className="w-full bg-[#121B38] border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400 cursor-pointer"
                   >
                     <option value="order-support">Existing Order / Tracking Inquiry</option>
-                    <option value="bulk-quote">Bulk Studio Quote (&gt;$500 AUD)</option>
+                    <option value="bulk-quote">Bulk Studio Quote</option>
                     <option value="custom-bands">Custom Bank Band / Denomination Request</option>
                     <option value="compliance">RBA Legal & Compliance Question</option>
-                    <option value="crypto-help">Cryptocurrency Payment Assistance</option>
+                    <option value="payment-help">Payment &amp; Invoice Assistance</option>
                   </select>
                 </div>
 

@@ -44,14 +44,14 @@ export const Hero: React.FC<HeroProps> = ({ onReviewsClick }) => {
 
             {/* Subheading / Value Copy */}
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Authentic Australian dollar prop currency engineered for high-definition 4K/8K film productions, television broadcasts, theatre, and training. Double-sided polymer finish with 100% Australian Reserve Bank compliance.
+              Australian dollar prop currency made for film productions, television, theatre, and training. One-sided, 75% scale notes with large "PROP COPY" markings, designed to follow Reserve Bank of Australia reproduction guidelines.
             </p>
 
             {/* Trust Indicators */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 pb-2 text-xs text-slate-300">
               <div className="flex items-center gap-2 justify-center lg:justify-start">
                 <Truck className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>Free Tracked Express</span>
+                <span>Free Shipping Over $150</span>
               </div>
               <div className="flex items-center gap-2 justify-center lg:justify-start">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -59,11 +59,11 @@ export const Hero: React.FC<HeroProps> = ({ onReviewsClick }) => {
               </div>
               <div className="flex items-center gap-2 justify-center lg:justify-start">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span>Min. Price $500 AUD (25% Rate)</span>
+                <span>Stacks from $39 AUD</span>
               </div>
               <div className="flex items-center gap-2 justify-center lg:justify-start">
                 <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>10% Crypto Discount</span>
+                <span>Secure Card Checkout</span>
               </div>
             </div>
 

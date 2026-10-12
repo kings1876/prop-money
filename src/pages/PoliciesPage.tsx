@@ -158,7 +158,7 @@ export const PoliciesPage: React.FC<PoliciesPageProps> = ({ policyType }) => {
 
               <h2 className="font-bold text-white text-base pt-2">2. No Storage of Payment Credentials</h2>
               <p>
-                We never store bank account credentials or private cryptographic keys. Cryptocurrency transactions occur peer-to-peer on their respective public blockchains.
+                We never see or store your card details. Card payments are processed securely by Stripe, a PCI DSS Level 1 certified payment provider.
               </p>
 
               <h2 className="font-bold text-white text-base pt-2">3. Non-Disclosure & Confidentiality</h2>

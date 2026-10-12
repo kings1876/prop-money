@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 import { Product, ProductVariant } from '../types';
-import { BanknoteVisual } from '../components/BanknoteVisual';
+import { ProductImage } from '../components/ProductImage';
 import { 
   ShieldCheck, Truck, Sparkles, Plus, Minus, ArrowRight, 
   ArrowLeft, Check, AlertCircle, Share2, Layers, CheckCircle2 
@@ -193,20 +193,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               <div className="flex items-center justify-between text-xs text-slate-400 mb-6">
                 <span className="font-mono text-amber-400 font-semibold tracking-wider flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  AUTHENTIC {product.currency} FILM SPECIMEN
+                  {product.currency} FILM PROP · NOT LEGAL TENDER
                 </span>
                 <span className="text-slate-400">SKU: {product.id}</span>
               </div>
 
               {/* Banknote visual render */}
               <div className="py-6">
-                <BanknoteVisual
-                  currency={product.currency}
-                  denomination={product.denomination}
-                  isStack={true}
-                  stagedValue={currentVariant.stagedValue || product.stagedValue}
-                  badge={product.badge}
-                />
+                <ProductImage product={product} showBadge noteCount={currentVariant.noteCount} className="rounded-xl overflow-hidden aspect-[4/3]" />
               </div>
             </div>
 
@@ -215,13 +209,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               <div className="flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Legal Compliance Guarantee:</strong> Double-sided printed with indelible "PROP COPY / NOT LEGAL TENDER" disclaimers.
+                  <strong>Legal Compliance:</strong> One-sided, 75% scale notes with large "PROP COPY / NOT LEGAL TENDER" markings across the face.
                 </span>
               </div>
               <div className="flex items-start gap-2.5">
                 <Truck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Free Express Tracked Delivery:</strong> Ships nationwide across Australia with discreet plain packaging.
+                  <strong>Tracked Delivery:</strong> Ships nationwide across Australia. Free on orders over $150.
                 </span>
               </div>
             </div>
@@ -268,57 +262,24 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   {product.name}
                 </h1>
                 <div className="mt-1.5 text-sm text-amber-300 font-mono font-medium">
-                  Staged Cinematic Value: {currentVariant.stagedValue} ({currentVariant.noteCount} Notes)
+                  {currentVariant.noteCount.toLocaleString()} prop notes · one-sided · 75% scale
                 </div>
               </div>
 
-              {/* Guaranteed 25% Delivery Pricing Box */}
-              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Fixed 25% Delivery Rate:
-                  </span>
-                  <span className="text-emerald-300 font-mono text-[11px] font-semibold bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700/50">
-                    Pay 25% of Delivered Value
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-xs pt-1.5 border-t border-emerald-900/60">
-                  <div>
-                    <span className="text-slate-400 block text-[11px]">Prop Cash to be Delivered:</span>
-                    <span className="font-bold text-white font-mono text-base">{currentVariant.stagedValue}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block text-[11px]">Delivery Price (25%):</span>
-                    <span className="font-bold text-amber-400 font-mono text-base">${currentPrice} AUD</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Price & Crypto Discount Highlight */}
+              {/* Price */}
               <div className="pt-2 border-t border-slate-800">
                 <div className="flex flex-wrap items-baseline gap-2.5">
                   <span className="font-display font-extrabold text-3xl sm:text-4xl text-white tabular-nums">
                     ${currentPrice} <span className="text-sm font-sans font-normal text-slate-400">AUD</span>
                   </span>
                   <span className="text-xs text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40">
-                    Free Express Shipping
+                    Free Shipping Over $150
                   </span>
                   <span className="text-xs text-amber-300 font-medium px-2 py-0.5 rounded bg-amber-950/40 border border-amber-800/40">
-                    Min. Price $500 AUD
+                    GST included
                   </span>
                 </div>
 
-                {/* 10% Crypto Discount Notice */}
-                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Pay with Crypto & Save 10%:</span>
-                  </div>
-                  <span className="font-mono font-bold text-amber-200 text-sm tabular-nums">
-                    ${Math.round(currentPrice * 0.9)} AUD
-                  </span>
-                </div>
               </div>
 
               {/* Variable Price Variant Selection Box */}
@@ -327,7 +288,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-white uppercase tracking-wider flex items-center gap-1.5">
                       <Layers className="w-3.5 h-3.5 text-amber-400" />
-                      Select Quantity & Staging Tier (Variable Price):
+                      Select Pack Size:
                     </span>
                     <span className="text-amber-400 font-medium">
                       Selected: {currentVariant.name}
@@ -353,7 +314,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                             {isSelected && <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />}
                           </div>
                           <div className="mt-1 flex items-baseline justify-between">
-                            <span className="text-[11px] text-amber-300 font-mono">{v.stagedValue}</span>
+                            <span className="text-[11px] text-amber-300 font-mono">{v.noteCount.toLocaleString()} notes</span>
                             <span className="font-display font-extrabold text-xs text-white">${v.price} AUD</span>
                           </div>
                         </button>

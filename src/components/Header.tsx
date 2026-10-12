@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
       code: 'USD',
       symbol: '$',
       flag: '🇺🇸',
-      notes: '$1, $2, $5, $10, $20, $50, $100',
+      notes: '$1, $5, $10, $20, $50, $100',
       badge: 'Hollywood Standard',
       accent: 'border-cyan-500/40 text-cyan-400 bg-cyan-950/40'
     },
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
       code: 'AUD',
       symbol: '$',
       flag: '🇦🇺',
-      notes: '$5, $10, $20, $50, $100 & Cases',
+      notes: '$10, $20, $50, $100',
       badge: 'Domestic Flagship',
       accent: 'border-amber-500/40 text-amber-400 bg-amber-950/40'
     },
@@ -98,19 +98,17 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto flex items-center justify-between font-mono">
           <div className="hidden sm:flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-semibold text-emerald-400">25% Fixed Delivery Rate</span>
+            <span className="font-semibold text-emerald-400">Film &amp; TV Prop Money</span>
             <span className="text-stone-600">·</span>
-            <span className="text-stone-300">Pay 25% of prop money face value delivered</span>
+            <span className="text-stone-300">One-sided, 75% scale, clearly marked PROP COPY</span>
           </div>
           
           <div className="mx-auto sm:mx-0 flex items-center gap-2.5">
             <span className="text-[#C87D55] font-semibold bg-[#1D2024] border border-[#8C4A2F]/50 px-2.5 py-0.5 rounded text-[11px]">
-              Min. Price $500 AUD (Delivers $2,000+)
+              Stacks from $39 AUD
             </span>
             <span className="text-stone-600 hidden sm:inline">·</span>
-            <span className="text-amber-400 font-semibold">10% Crypto Discount</span>
-            <span className="text-stone-600 hidden sm:inline">·</span>
-            <span className="hidden sm:inline text-stone-300">Free Express Shipping</span>
+            <span className="hidden sm:inline text-stone-300">Free Shipping Over $150</span>
           </div>
 
           <Link 
@@ -151,23 +149,30 @@ export const Header: React.FC<HeaderProps> = ({
               onMouseEnter={() => setShopDropdownOpen(true)}
               onMouseLeave={() => setShopDropdownOpen(false)}
             >
-              <button
-                onClick={() => setShopDropdownOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer whitespace-nowrap focus:outline-none ${
+              <div
+                className={`flex items-center gap-1.5 py-1 transition-colors whitespace-nowrap ${
                   location.pathname === '/shop' || shopDropdownOpen
                     ? 'text-[#C87D55] font-semibold'
                     : 'text-stone-300 hover:text-white'
                 }`}
-                aria-expanded={shopDropdownOpen}
-                aria-haspopup="true"
               >
-                <span>Shop</span>
-                <ChevronDown 
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    shopDropdownOpen ? 'rotate-180 text-[#C87D55]' : 'text-stone-400 group-hover:text-white'
-                  }`} 
-                />
-              </button>
+                <Link to="/shop" onClick={() => setShopDropdownOpen(false)}>
+                  Shop
+                </Link>
+                <button
+                  onClick={() => setShopDropdownOpen((prev) => !prev)}
+                  className="cursor-pointer focus:outline-none"
+                  aria-label="Toggle shop categories"
+                  aria-expanded={shopDropdownOpen}
+                  aria-haspopup="true"
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      shopDropdownOpen ? 'rotate-180 text-[#C87D55]' : 'text-stone-400 group-hover:text-white'
+                    }`}
+                  />
+                </button>
+              </div>
 
               {/* Flyout Dropdown Menu */}
               {shopDropdownOpen && (
@@ -233,7 +238,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {/* Bottom Quick Feature Strip */}
                     <div className="pt-2.5 mt-1 border-t border-[#23272E] px-3 flex items-center justify-between text-[11px] font-mono text-stone-400">
                       <span className="text-[#C87D55]">
-                        Min Pack Price $500 AUD · 25% Rate
+                        Stacks from $39 AUD
                       </span>
                       <Link
                         to="/compliance"

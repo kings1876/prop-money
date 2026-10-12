@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CartItem } from '../types';
-import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Sparkles, ShoppingBag, AlertCircle, Check, Lock } from 'lucide-react';
-import { BanknoteVisual } from './BanknoteVisual';
+import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { ProductImage } from './ProductImage';
+import { itemPrice as getItemPrice, cartSubtotal, shippingFor, formatAud, FREE_SHIPPING_THRESHOLD_AUD } from '../lib/pricing';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -21,10 +22,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const getItemPrice = (item: CartItem) => item.selectedVariant?.price || item.product.price;
-  const subtotal = items.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
-  const cryptoDiscount = Math.round(subtotal * 0.1);
-  const totalWithCrypto = subtotal - cryptoDiscount;
+  const subtotal = cartSubtotal(items);
+  const shipping = shippingFor(subtotal);
+  const total = subtotal + shipping;
+  const toFreeShipping = FREE_SHIPPING_THRESHOLD_AUD - subtotal;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -56,27 +57,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             </button>
           </div>
 
-          {/* Nationwide Express Free Shipping Banner */}
-          <div className="bg-emerald-950/40 border-b border-emerald-800/30 px-5 py-2.5 text-xs text-emerald-300 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-medium">Free Australia Post Express Shipping</span>
-            </div>
-            <span className="text-[11px] font-bold text-emerald-400">$0.00</span>
+          {/* Free Shipping Progress Banner */}
+          <div className="bg-emerald-950/40 border-b border-emerald-800/30 px-5 py-2.5 text-xs text-emerald-300 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-medium">
+              {toFreeShipping > 0
+                ? `Add ${formatAud(toFreeShipping)} more for free tracked shipping`
+                : 'Free tracked shipping unlocked'}
+            </span>
           </div>
-
-          {/* 25% Delivery Pricing Guarantee */}
-          {items.length > 0 && (
-            <div className="bg-[#101833] border-b border-slate-800 px-5 py-2 flex items-center justify-between text-xs">
-              <span className="font-semibold text-emerald-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>25% Delivery Rate Applied</span>
-              </span>
-              <span className="text-[11px] font-mono text-slate-400">
-                Min. Item Price: $500 AUD
-              </span>
-            </div>
-          )}
 
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -112,12 +101,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       onClick={onClose}
                       className="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-[#0A0F22] block"
                     >
-                      <BanknoteVisual
-                        currency={item.product.currency}
-                        denomination={item.product.denomination}
-                        isStack={false}
-                        className="!aspect-auto h-full !p-1"
-                      />
+                      <ProductImage product={item.product} />
                     </Link>
 
                     {/* Details */}
@@ -140,12 +124,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         <span className="text-xs font-display font-bold text-white tabular-nums">
                           ${itemPrice} AUD
                         </span>
-                        <span className="text-[10px] text-emerald-400 font-medium">
-                          25% Rate
-                        </span>
                       </div>
                       <span className="text-[10px] text-amber-300 font-mono block">
-                        Delivers: {item.selectedVariant?.stagedValue || item.product.stagedValue}
+                        {(item.selectedVariant?.noteCount ?? item.product.noteCount).toLocaleString()} prop notes
                       </span>
                     </div>
 
@@ -190,45 +171,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {items.length > 0 && (
             <div className="p-5 border-t border-slate-800 bg-[#0B132B] space-y-4">
               
-              {/* Crypto 10% Discount Callout */}
-              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold block text-amber-200">
-                    Pay with Crypto & Save 10% (${cryptoDiscount} AUD discount)
-                  </span>
-                  <span className="text-[11px] text-amber-300/80">
-                    Applied on the Order Form for USDT, BTC, ETH & SOL.
-                  </span>
-                </div>
-              </div>
-
               {/* Price Calculations */}
               <div className="space-y-2 text-xs text-slate-300">
-                <div className="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30 text-emerald-300">
-                  <span className="font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Prop Money Delivered:
-                  </span>
-                  <span className="font-mono font-bold">${subtotal * 4} Value</span>
-                </div>
-
                 <div className="flex justify-between">
-                  <span>Delivery Price (25%):</span>
-                  <span className="font-mono tabular-nums text-white font-bold">${subtotal} AUD</span>
+                  <span>Subtotal:</span>
+                  <span className="font-mono tabular-nums text-white font-bold">{formatAud(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-emerald-400">
-                  <span>Tracked Express Shipping</span>
-                  <span className="font-semibold">FREE</span>
-                </div>
-                <div className="flex justify-between text-amber-400 font-medium">
-                  <span>Price if paying with Crypto (-10%)</span>
-                  <span className="font-mono tabular-nums">${totalWithCrypto} AUD</span>
+                  <span>Tracked Shipping</span>
+                  <span className="font-semibold">{shipping === 0 ? 'FREE' : formatAud(shipping)}</span>
                 </div>
                 <div className="pt-2 border-t border-slate-800 flex justify-between items-baseline text-base font-bold text-white">
                   <span>Total Amount</span>
                   <span className="font-display font-extrabold text-xl text-white tabular-nums">
-                    ${subtotal} <span className="text-xs font-normal text-slate-400">AUD</span>
+                    {formatAud(total)}
                   </span>
                 </div>
               </div>
@@ -239,7 +195,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 onClick={onClose}
                 className="w-full py-3.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm transition-colors shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Proceed to Order Form Checkout</span>
+                <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
